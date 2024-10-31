@@ -172,7 +172,7 @@ ZMK_HOLD_TAP(hmr,
 
         numpad_layer {
             bindings = <
-&bt BT_SEL 0       &bt BT_SEL 1      &bt BT_SEL 2  &bt BT_CLR       &out OUT_TOG    &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp KP_PLUS   &trans
+&bt BT_SEL 0       &bt BT_SEL 1      &bt BT_SEL 2  &bt BT_CLR       &bootloader    &kp KP_NUMBER_7  &kp KP_NUMBER_8  &kp KP_NUMBER_9  &kp KP_PLUS   &bootloader
 &trans             &trans            &trans        &trans           &trans          &kp KP_NUMBER_4  &kp KP_NUMBER_5  &kp KP_NUMBER_6  &kp KP_MINUS  &trans
 &ext_power EP_TOG  &kp LEFT_COMMAND  &kp LG(W)     &kp LS(LC(TAB))  &kp LC(TAB)     &kp KP_NUMBER_1  &kp KP_NUMBER_2  &kp KP_NUMBER_3  &kp KP_ENTER  &trans
                                                    &kp DOWN         &kp UP_ARROW    &kp KP_NUMBER_0  &kp KP_DOT
