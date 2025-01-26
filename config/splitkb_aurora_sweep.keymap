@@ -39,6 +39,16 @@ ZMK_HOLD_TAP(hmr,
     hold-trigger-on-release;             // delay positional check until key-release
 )
 
+ZMK_HOLD_TAP(shift_space_priority,
+    flavor = "hold-preferred";
+    tapping-term-ms = <180>;    // Adjust based on typing speed
+    quick-tap-ms = <150>;       // Max time between taps for double-tap
+    require-prior-idle-ms = <200>; // Avoid misfires after fast typing
+    bindings = <&kp>, <&kp>;
+    hold-trigger-key-positions = <KEYS_R>; // Only trigger Shift if right-hand keys are pressed
+    hold-trigger-on-release;    // Finalize hold/tap decision on key release
+)
+
 / {
     behaviors {
         shift_caps_tap_dance: shift_caps_tap_dance {
@@ -47,22 +57,13 @@ ZMK_HOLD_TAP(hmr,
             #binding-cells = <0>;
             bindings = <&sk LEFT_SHIFT>, <&kp CAPSLOCK>, <&caps_word>;
         };
-
-        space_enter: space_enter {
-            compatible = "zmk,behavior-tap-dance";
-            label = "SPACE_ENTER";
-            #binding-cells = <0>;
-            bindings = <&kp SPACE>, <&kp RET>;
-
-            tapping-term-ms = <300>;
-        };
     };
 
     combos {
         compatible = "zmk,combos";
 
         toggle_numpad {
-            bindings = <&tog 5>;
+            bindings = <&tog 3>;
             key-positions = <LH0 RH0>;
         };
 
@@ -97,7 +98,7 @@ ZMK_HOLD_TAP(hmr,
         };
 
         fcp_mode {
-            bindings = <&tog 6>;
+            bindings = <&tog 4>;
             key-positions = <LH1 RH1>;
         };
 
@@ -116,7 +117,7 @@ ZMK_HOLD_TAP(hmr,
 &kp Q  &kp W  &kp E  &kp R  &kp T           &kp Y      &kp U  &kp I      &kp O    &kp P
 &hml LEFT_SHIFT A  &hml LEFT_CONTROL S  &hml LEFT_ALT D  &hml LGUI F  &kp G           &kp H      &hmr LGUI J  &hmr LEFT_ALT K      &hmr LEFT_CONTROL L    &hmr LEFT_SHIFT SEMI
 &kp Z  &kp X  &kp C  &kp V  &kp B           &kp N      &kp M  &kp COMMA  &kp DOT  &kp FSLH
-                     &mo 2  &kp SPACE    &kp ENTER  &mo 1
+                     &kp LEFT_SHIFT &lt 2 SPACE    &mt LEFT_ALT ENTER  &mo 1
             >;
         };
 
@@ -125,16 +126,16 @@ ZMK_HOLD_TAP(hmr,
 &kp N1                 &kp N2            &kp N3        &kp N4    &kp N5        &kp N6         &kp N7     &kp N8    &kp N9             &kp N0
 &kp LEFT_SHIFT  &sk LEFT_CONTROL  &sk LEFT_ALT  &sk LGUI  &kp TAB       &kp BACKSPACE  &kp LEFT   &kp DOWN  &kp UP             &kp RIGHT
 &kp GRAVE              &kp FSLH          &kp BSLH      &kp SQT   &kp ESCAPE    &kp MINUS      &kp EQUAL  &kp LBKT  &kp RIGHT_BRACKET  &kp SEMICOLON
-                                                       &mo 2     &kp SPACE     &kp ENTER      &mo 1
+                                                       &trans    &trans     &trans     &trans
             >;
         };
 
         sweep34_lower {
             bindings = <
-&kp LC(LEFT)   &kp LSHFT             &kp LEFT_COMMAND              &kp TAB                       &kp LC(RIGHT)                   &kp CARET          &kp AMPERSAND           &kp ASTERISK            &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
+&kp EXCLAMATION   &kp AT_SIGN             &kp HASH              &kp DOLLAR                       &kp PERCENT                   &kp CARET          &kp AMPERSAND           &kp ASTERISK            &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
 &kp LG(LC(A))  &kp LG(LC(LS(N4)))    &kp LS(LA(LC(LG(NUMBER_1))))  &kp LA(LC(LG(LS(NUMBER_2))))  &kp LS(LA(LC(LG(NUMBER_3))))    &kp LA(LC(ENTER))  &kp LA(LC(LEFT_ARROW))  &kp LA(LC(DOWN_ARROW))  &kp LA(LC(UP_ARROW))  &kp LA(LC(RIGHT_ARROW))
 &kp C_BRI_DEC  &kp C_BRIGHTNESS_INC  &kp C_MUTE                    &kp C_VOL_DN                  &kp C_VOLUME_UP                 &kp UNDERSCORE     &kp PLUS                &kp LEFT_BRACE          &kp RIGHT_BRACE       &kp COLON
-                                                                   &mo 2                         &kp SPACE                       &kp ENTER          &mo 1
+                                                                   &trans                        &trans                     &trans       &trans
             >;
         };
 
@@ -152,7 +153,7 @@ ZMK_HOLD_TAP(hmr,
 &kp LS(Z)  &kp I           &kp E          &kp O          &kp T        &trans  &trans  &trans  &trans  &trans
 &kp A      &kp LA(K)       &kp J          &kp L          &kp BSPC     &trans  &trans  &trans  &trans  &trans
 &kp LG(Z)  &kp LEFT_SHIFT  &kp LG(MINUS)  &kp LG(EQUAL)  &kp LG(B)    &trans  &trans  &trans  &trans  &trans
-                                          &mo 7          &trans       &trans  &trans
+                                          &mo 5         &trans       &trans  &trans
             >;
         };
 
