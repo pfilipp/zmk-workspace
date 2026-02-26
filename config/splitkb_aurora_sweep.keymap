@@ -132,10 +132,10 @@ ZMK_HOLD_TAP(shift_space_priority,
 
         sweep34_lower {
             bindings = <
-&kp EXCLAMATION   &kp AT_SIGN           &kp HASH                      &kp DOLLAR                    &kp PERCENT                     &kp CARET          &kp AMPERSAND           &kp ASTERISK            &kp LEFT_PARENTHESIS  &kp RIGHT_PARENTHESIS
+&kp LC(LA(N1))    &kp LC(LA(N2))        &kp LC(LA(N3))                &kp LC(LA(N4))                &kp LC(LA(N5))                  &kp LC(LA(N6))     &kp LC(LA(N7))          &kp LC(LA(N8))          &kp LC(LA(N9))        &kp LC(LA(N0))
 &kp LG(LC(A))     &kp LG(LC(LS(N4)))    &kp LS(LA(LC(LG(NUMBER_1))))  &kp LA(LC(LG(LS(NUMBER_2))))  &kp LS(LA(LC(LG(NUMBER_3))))    &kp LA(LC(ENTER))  &kp LA(LC(LEFT_ARROW))  &kp LA(LC(DOWN_ARROW))  &kp LA(LC(UP_ARROW))  &kp LA(LC(RIGHT_ARROW))
-&kp C_BRI_DEC     &kp C_BRIGHTNESS_INC  &kp C_MUTE                    &kp C_VOL_DN                  &kp C_VOLUME_UP                 &kp UNDERSCORE     &kp PLUS                &kp LEFT_BRACE          &kp RIGHT_BRACE       &kp COLON
-                                                                      &trans                        &trans                          &trans             &trans
+&kp C_PREVIOUS    &kp C_PLAY_PAUSE      &kp C_NEXT                    &kp C_VOL_DN                  &kp C_VOLUME_UP                 &kp UNDERSCORE     &kp PLUS                &kp LEFT_BRACE          &kp RIGHT_BRACE       &kp COLON
+                                                                      &trans                        &trans                          &kp LEFT_SHIFT             &trans
             >;
         };
 

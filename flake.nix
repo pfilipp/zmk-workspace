@@ -9,7 +9,6 @@
     # Zephyr sdk and toolchain.
     zephyr-nix.url = "github:urob/zephyr-nix";
     zephyr-nix.inputs.zephyr.follows = "zephyr";
-    zephyr-nix.inputs.nixpkgs.follows = "nixpkgs";
   };
 
   outputs = { nixpkgs, zephyr-nix, ... }: let
@@ -47,6 +46,10 @@
               # pkgs.gnugrep
               # pkgs.gnused
             ];
+
+          env = {
+            PYTHONPATH = "${zephyr.pythonEnv}/${zephyr.pythonEnv.sitePackages}";
+          };
 
           shellHook = ''
             export ZMK_BUILD_DIR=$(pwd)/.build;
