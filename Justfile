@@ -41,6 +41,45 @@ build expr *west_args:
         just _build_single "$board" "$shield" "$snippet" "$artifact" {{ west_args }}
     done
 
+# build sweep firmware from original (unmodified) ZMK main branch
+build-sweep-original *west_args:
+    #!/usr/bin/env bash
+    set -euo pipefail
+    zmk_main="{{ absolute_path('.zmk-main') }}"
+    tmp_config=$(mktemp -d)
+    trap 'git -C zmk worktree remove "$zmk_main" --force 2>/dev/null || true; rm -rf "$tmp_config"' EXIT
+
+    # Create a temporary worktree at ZMK main branch
+    git -C zmk fetch local main 2>/dev/null || true
+    git -C zmk worktree add "$zmk_main" local/main --detach --force 2>/dev/null \
+        || git -C zmk worktree add "$zmk_main" zmkfirmware/main --detach --force
+
+    # Create a filtered config: strip Kconfig symbols that only exist on the feature branch
+    cp -a "{{ config }}/." "$tmp_config/"
+    for conf in "$tmp_config"/*.conf; do
+        grep -v 'CONFIG_ZMK_HID_LAYER_STATE_REPORT' "$conf" > "$conf.tmp" && mv "$conf.tmp" "$conf"
+    done
+
+    # Build left half
+    echo "Building original firmware for splitkb_aurora_sweep_left..."
+    west build -s "$zmk_main/app" -d "{{ build }}/sweep_left_original" -p \
+        -b nice_nano/nrf52840/zmk {{ west_args }} -- \
+        -DZMK_CONFIG="$tmp_config" \
+        -DSHIELD="splitkb_aurora_sweep_left nice_view_adapter nice_view"
+
+    # Build right half
+    echo "Building original firmware for splitkb_aurora_sweep_right..."
+    west build -s "$zmk_main/app" -d "{{ build }}/sweep_right_original" -p \
+        -b nice_nano/nrf52840/zmk {{ west_args }} -- \
+        -DZMK_CONFIG="$tmp_config" \
+        -DSHIELD="splitkb_aurora_sweep_right nice_view_adapter nice_view"
+
+    # Copy artifacts
+    mkdir -p "{{ out }}"
+    cp "{{ build }}/sweep_left_original/zephyr/zmk.uf2" "{{ out }}/splitkb_aurora_sweep_left-original.uf2"
+    cp "{{ build }}/sweep_right_original/zephyr/zmk.uf2" "{{ out }}/splitkb_aurora_sweep_right-original.uf2"
+    echo "Done! Firmware at {{ out }}/splitkb_aurora_sweep_*-original.uf2"
+
 # clear build cache and artifacts
 clean:
     rm -rf {{ build }} {{ out }}
