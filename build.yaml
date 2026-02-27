@@ -13,12 +13,19 @@
 #
 ---
 include:
-  - board: planck_rev6
-  - board: corneish_zen_v2_left
-  - board: corneish_zen_v2_right
-  - board: glove80_lh
-  - board: glove80_rh
-  - board: nice_nano_v2
+  - board: planck/stm32f303xc/zmk
+    artifact-name: planck_rev6
+  - board: corneish_zen_left/nrf52840/zmk
+    artifact-name: corneish_zen_v2_left
+  - board: corneish_zen_right/nrf52840/zmk
+    artifact-name: corneish_zen_v2_right
+  - board: glove80_lh/nrf52840
+    artifact-name: glove80_lh
+  - board: glove80_rh/nrf52840
+    artifact-name: glove80_rh
+  - board: nice_nano/nrf52840/zmk
     shield: splitkb_aurora_sweep_left nice_view_adapter nice_view
-  - board: nice_nano_v2
+    artifact-name: splitkb_aurora_sweep_left
+  - board: nice_nano/nrf52840/zmk
     shield: splitkb_aurora_sweep_right nice_view_adapter nice_view
+    artifact-name: splitkb_aurora_sweep_right

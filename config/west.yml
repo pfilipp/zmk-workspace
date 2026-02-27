@@ -29,7 +29,8 @@ manifest:
 
   projects:
     - name: zmk
-      remote: zmkfirmware
+      url: /Users/pfilipp/Projects/private/temp/zmk-workspace/zmk
+      revision: layer-state-report
       import: app/west.yml
 
     # ZMK modules
@@ -50,7 +51,7 @@ manifest:
     # the default (needed for less common hardware).
     - name: zephyr
       remote: zmkfirmware
-      revision: v3.5.0+zmk-fixes
+      revision: v4.1.0+zmk-fixes
       clone-depth: 1
       import:
         name-allowlist:
@@ -59,6 +60,7 @@ manifest:
           - hal_rpi_pico
           - hal_stm32
           - lvgl
+          - mbedtls
           - tinycrypt
 
   self:
