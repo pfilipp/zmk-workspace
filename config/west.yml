@@ -29,7 +29,7 @@ manifest:
 
   projects:
     - name: zmk
-      url: /Users/pfilipp/Projects/private/temp/zmk-workspace/zmk
+      url: https://github.com/pfilipp/zmk
       revision: layer-state-report
       import: app/west.yml
 
