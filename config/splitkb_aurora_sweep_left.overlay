@@ -1,16 +1,20 @@
 /*
- * Left-half override: bodge wire reroutes col index 3 (silkscreen C3) from
- * the dead nice!nano pin 6 onto the E2A pad (pin 14).
+ * Left-half override: two bodge wires reroute dead columns onto the
+ * encoder-2 pads:
+ *   - col index 3 (silkscreen C3) from the dead nice!nano pin 6 onto the
+ *     E2A pad (pin 14).
+ *   - col index 0 (silkscreen C0) from the dead nice!nano pin 10 onto the
+ *     E2B pad (pin 16).
  *
  * Same GPIO flags as upstream col-gpios (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH).
- * left_encoder2 is disabled because its a-gpios (pin 14) is now repurposed
- * for the matrix. Matrix-transform, column count, and right-half config
- * are untouched.
+ * left_encoder2 is disabled because both its a-gpios (pin 14) and b-gpios
+ * (pin 16) are now repurposed for the matrix. Matrix-transform, column
+ * count, and right-half config are untouched.
  */
 
 &kscan {
     col-gpios
-        = <&pro_micro 10 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>
+        = <&pro_micro 16 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>   /* was &pro_micro 10 — bodged C0 -> E2B */
         , <&pro_micro 4  (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>
         , <&pro_micro 5  (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>
         , <&pro_micro 14 (GPIO_PULL_DOWN | GPIO_ACTIVE_HIGH)>   /* was &pro_micro 6 — bodged C3 -> E2A */
