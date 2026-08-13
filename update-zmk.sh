@@ -89,10 +89,15 @@ git_zmk fetch --prune "$FORK_REMOTE"
 
 upstream_tip="$(git_zmk rev-parse "$UPSTREAM_REMOTE/$UPSTREAM_BRANCH")"
 upstream_tip_short="$(git_zmk rev-parse --short "$UPSTREAM_REMOTE/$UPSTREAM_BRANCH")"
+fork_tip="$(git_zmk rev-parse "$FORK_REMOTE/$BRANCH")"
 
-if git_zmk merge-base --is-ancestor "$upstream_tip" "$old_tip"; then
-    log "Already up to date with $UPSTREAM_REMOTE/$UPSTREAM_BRANCH ($upstream_tip_short). Nothing to rebase."
-    [[ "$RUN_WEST_UPDATE" -eq 1 ]] && { log "Running west update anyway"; (cd "$WORKSPACE" && west update --fetch-opt=--filter=blob:none); }
+# "Up to date" means the FORK already has upstream merged in — i.e. nothing
+# new to rebase AND the local branch matches the fork (so west update is a
+# no-op). Comparing only local HEAD vs upstream is wrong: after a rebase the
+# local branch is ahead of upstream, but the fork is still pre-rebase, and
+# west update would silently roll us back.
+if git_zmk merge-base --is-ancestor "$upstream_tip" "$fork_tip" && [[ "$old_tip" == "$fork_tip" ]]; then
+    log "Already up to date: $FORK_REMOTE/$BRANCH ($(git_zmk rev-parse --short "$fork_tip")) already contains $UPSTREAM_REMOTE/$UPSTREAM_BRANCH ($upstream_tip_short)."
     exit 0
 fi
 
@@ -135,6 +140,8 @@ if [[ "$PUSH" -eq 1 ]]; then
     if [[ "$RUN_WEST_UPDATE" -eq 1 ]]; then
         log "Running west update (manifest-rev now resolves to the rebased tip on $FORK_REMOTE)"
         (cd "$WORKSPACE" && west update --fetch-opt=--filter=blob:none)
+        # west update detaches HEAD; reattach to the branch so future runs pass the pre-flight check.
+        git_zmk checkout "$BRANCH"
     else
         warn "Skipped 'west update' (--no-west-update)."
     fi
