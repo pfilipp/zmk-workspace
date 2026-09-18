@@ -29,3 +29,10 @@ include:
   - board: halcyon_wireless//zmk
     shield: halcyon_ferris_right mod_battery_lipo mod_cirque_hw_right
     artifact-name: halcyon_ferris_right
+  # No-dongle variant: left half is the split central and talks BLE directly
+  # to the host (e.g. Vision Pro). Right half firmware is shared with dongle
+  # mode; re-pair the halves when switching (settings reset / BT_CLR).
+  - board: halcyon_wireless//zmk
+    shield: halcyon_ferris_left mod_battery_lipo mod_display_epaper_forest mod_cirque_central
+    cmake-args: -DCONFIG_ZMK_HID_LAYER_STATE_REPORT=y
+    artifact-name: halcyon_ferris_left_standalone
