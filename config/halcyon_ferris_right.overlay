@@ -1,9 +1,0 @@
-/*
- * Right half: Cirque touchpad (mod_cirque_hw_right).
- * ADC attenuation: "1x" is the most sensitive, "4x" the least. The Halcyon
- * module defaults to "2x". Software scaling lives on the central side
- * (see halcyon_ferris.keymap, &trackpad_listener).
- */
-&trackpad {
-    sensitivity = "1x";
-};
