@@ -29,3 +29,13 @@ include:
   - board: nice_nano/nrf52840/zmk
     shield: splitkb_aurora_sweep_right nice_view_adapter nice_view
     artifact-name: splitkb_aurora_sweep_right
+  - board: halcyon_dongle//zmk
+    shield: halcyon_ferris_dongle mod_cirque_central
+    artifact-name: halcyon_ferris_dongle
+  - board: halcyon_wireless//zmk
+    shield: halcyon_ferris_left mod_battery_lipo mod_display_epaper_forest
+    cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_CENTRAL=n
+    artifact-name: halcyon_ferris_left
+  - board: halcyon_wireless//zmk
+    shield: halcyon_ferris_right mod_battery_lipo mod_cirque_hw_right
+    artifact-name: halcyon_ferris_right

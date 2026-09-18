@@ -1,0 +1,5 @@
+/*
+ * The dongle is the split central: it runs the keymap for the whole board.
+ * Keep a single source of truth in halcyon_ferris.keymap.
+ */
+#include "halcyon_ferris.keymap"

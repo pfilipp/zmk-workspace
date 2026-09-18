@@ -26,6 +26,8 @@ manifest:
       url-base: https://github.com/urob
     - name: zmkfirmware
       url-base: https://github.com/zmkfirmware
+    - name: splitkb
+      url-base: https://github.com/splitkb
 
   projects:
     - name: zmk
@@ -46,6 +48,12 @@ manifest:
       path: modules/zmk/tri-state
     - name: zmk-unicode
       path: modules/zmk/unicode
+
+    # Halcyon boards (wireless controller, dongle) and shields from splitkb.com
+    - name: zmk-halcyon-module
+      remote: splitkb
+      path: modules/zmk/halcyon
+      revision: 0c1adbc24ade769d88e4e73d20e19f5d024afaaa # main (2026-09-17)
 
     # Only source necessary Zephyr modules. Remove this entire section to restore
     # the default (needed for less common hardware).
