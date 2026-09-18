@@ -27,11 +27,12 @@
 
 /*
  * Cirque touchpad (right half) is forwarded to the split central, which runs
- * this listener. Scale X/Y deltas by 3/2 on top of the hardware sensitivity
- * set in halcyon_ferris_right.overlay; tweak the ratio to taste.
+ * this listener. Scale X/Y deltas by 2/1 (multiplier/divisor); tweak the
+ * ratio to taste. Leave the hardware `sensitivity` at the module's "2x":
+ * "1x" saturates the sensor and it stops reporting touches.
  */
 &trackpad_listener {
-    input-processors = <&zip_xy_scaler 3 2>;
+    input-processors = <&zip_xy_scaler 2 1>;
 };
 
 /* left-hand HRMs */
