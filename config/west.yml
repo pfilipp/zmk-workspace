@@ -19,7 +19,7 @@
 manifest:
   defaults:
     remote: urob
-    revision: v0.3 # Pin everything to v0.3
+    revision: v0.3 # Fallback; every project below pins its own revision
 
   remotes:
     - name: urob
@@ -38,16 +38,22 @@ manifest:
     # ZMK modules
     - name: zmk-adaptive-key
       path: modules/zmk/adaptive-key
+      revision: e987227d625e8863343baf16bd11ff90310482a5 # main (2026-09-09)
     - name: zmk-auto-layer
       path: modules/zmk/auto-layer
+      revision: b50d514219c5ad61198f9a8be137c59d0674b11c # main (2026-09-10)
     - name: zmk-helpers
       path: modules/zmk/helpers
+      revision: 7bcba18fc8df27303eb92a435d33ea870cc51f98 # main (2026-09-10)
     - name: zmk-leader-key
       path: modules/zmk/leader-key
+      revision: 4745294d5f2bc12bbdf91471dd85bfbdbb35c47d # main (2026-09-10)
     - name: zmk-tri-state
       path: modules/zmk/tri-state
+      revision: c08969627245adeddbcdb6dfc1a4c167c04160e2 # main (2026-09-10)
     - name: zmk-unicode
       path: modules/zmk/unicode
+      revision: b8dc165b9a5a6358346a1d2598b9015a05d9b517 # main (2026-09-09)
 
     # Halcyon boards (wireless controller, dongle) and shields from splitkb.com
     - name: zmk-halcyon-module
