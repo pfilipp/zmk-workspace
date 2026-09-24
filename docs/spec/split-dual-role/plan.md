@@ -637,7 +637,9 @@ In `security_changed()`, inside the `if (!err)` branch after the `LOG_DBG`:
 
 ```c
 #if IS_ENABLED(CONFIG_ZMK_SPLIT_ROLE_DYNAMIC)
-        if (level >= BT_SECURITY_L2 && !zmk_split_role_dongle_addr()) {
+        /* Never record a bonded host as the dongle; the host guard's disconnect is asynchronous. */
+        if (level >= BT_SECURITY_L2 && !zmk_split_role_dongle_addr() &&
+            zmk_ble_profile_index(bt_conn_get_dst(conn)) < 0) {
             LOG_INF("Recording %s as the dongle", addr);
             zmk_split_role_set_dongle_addr(bt_conn_get_dst(conn));
         }
