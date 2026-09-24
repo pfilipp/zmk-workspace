@@ -665,6 +665,7 @@ Claude-Session: https://claude.ai/code/session_015E8GyX6BnRNX4AeyGNe5et" && cd .
 - Modify: `zmk/app/dts/behaviors.dtsi`
 - Create: `zmk/app/src/behaviors/behavior_split_mode.c`
 - Modify: `zmk/app/CMakeLists.txt:44`
+- Modify: `config/halcyon_ferris.keymap:13-22,217`
 
 **Interfaces:**
 - Consumes: Task 1 role API, `zmk_ble_prof_select_persist` (Task 3).
@@ -883,15 +884,51 @@ target_sources_ifdef(CONFIG_ZMK_SPLIT app PRIVATE src/behaviors/behavior_split_m
 ```
 The file compiles to nothing unless a keymap references the node, so non-dual builds stay unchanged.
 
-- [ ] **Step 5: Temporary keymap reference to force instantiation, then build**
+- [ ] **Step 5: Wire the keymap (real change, moved here from Task 8)**
 
-Temporarily edit `config/halcyon_ferris.keymap`: add `#include <dt-bindings/zmk/split_mode.h>` next to the other `dt-bindings` includes and replace `&bt BT_SEL 0` on the numpad layer with `&split_mode SM_DONGLE`. Then:
+`config/halcyon_ferris.keymap` has an UNCOMMITTED edit by the user (touchpad scroll-layer
+changes). It must survive untouched and must NOT be committed by you. Procedure:
+
+```bash
+git stash push -m "user WIP keymap" -- config/halcyon_ferris.keymap
+```
+Then edit `config/halcyon_ferris.keymap`: after `#include <dt-bindings/zmk/bt.h>` add
+
+```c
+#include <dt-bindings/zmk/split_mode.h>
+
+/* Dual-role builds (HALCYON_DUAL_ROLE via -DDTS_EXTRA_CPPFLAGS) switch dongle/standalone mode with
+ * the BT keys; every other build keeps plain profile selection. */
+#ifdef HALCYON_DUAL_ROLE
+#define BT_KEY_0 &split_mode SM_DONGLE
+#define BT_KEY_1 &split_mode SM_HOST 1
+#define BT_KEY_2 &split_mode SM_HOST 2
+#else
+#define BT_KEY_0 &bt BT_SEL 0
+#define BT_KEY_1 &bt BT_SEL 1
+#define BT_KEY_2 &bt BT_SEL 2
+#endif
+```
+and on the numpad layer replace `&bt BT_SEL 0       &bt BT_SEL 1      &bt BT_SEL 2` with
+`BT_KEY_0           BT_KEY_1          BT_KEY_2` (keep the column alignment). Commit ONLY that:
+
+```bash
+git add config/halcyon_ferris.keymap && git commit -q -m "feat(halcyon): runtime dongle/standalone switch on the BT keys for dual builds
+
+Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
+Claude-Session: https://claude.ai/code/session_015E8GyX6BnRNX4AeyGNe5et"
+git stash pop && git diff --stat
+```
+Expected: the stash pops cleanly and `git diff --stat` shows `config/halcyon_ferris.keymap | 56 +++...` (the user's WIP is back, uncommitted). If the pop conflicts, resolve keeping BOTH the user's hunks and yours, then `git stash drop`. A safety copy of the user's diff is at `/private/tmp/claude-501/-Users-pfilipp-Projects-private-zmk-workspace/c21adb3f-293e-4b24-93e7-8a6f099a4974/scratchpad/user-wip-keymap.patch`.
+
+Then build:
 
 ```bash
 just build halcyon_ferris_left_dual 2>&1 | tail -4
 just build halcyon_ferris_right_dual 2>&1 | tail -4
+just build halcyon_ferris_left_standalone 2>&1 | tail -3
 ```
-Expected: both succeed; `grep -c behavior_split_mode .build/halcyon_ferris_right_dual/build.ninja` ≥ 1. Then **revert the keymap edit** (`git checkout config/halcyon_ferris.keymap`); Task 8 does the real keymap change.
+Expected: all succeed; `grep -c behavior_split_mode .build/halcyon_ferris_right_dual/build.ninja` ≥ 1; `grep -c splitmode .build/halcyon_ferris_left_standalone/zephyr/zephyr.dts` prints 0 (non-dual builds omit the node).
 
 - [ ] **Step 6: Commit**
 
@@ -1112,15 +1149,16 @@ In `behavior_split_mode.c`, replace the `TASK6` function body with:
 ```
 `event.source` is the peripheral slot index the keypress came from (`split/central.c:41-46`), which equals the index into `peripheral_addrs` (`reserve_peripheral_slot` → `zmk_ble_put_peripheral_addr`).
 
-- [ ] **Step 5: Build with the temporary keymap reference, then revert**
+- [ ] **Step 5: Build**
 
-Apply the same temporary keymap edit as Task 5 Step 5, then:
+The keymap already references `&split_mode` for dual builds (Task 5). Do not touch
+`config/halcyon_ferris.keymap` (it carries an uncommitted user edit).
 
 ```bash
 just build halcyon_ferris_dongle_dual -p 2>&1 | tail -4
 just build halcyon_ferris_dongle -p 2>&1 | tail -3
 ```
-Expected: both succeed. Revert the keymap edit afterwards (`git checkout config/halcyon_ferris.keymap`).
+Expected: both succeed.
 
 - [ ] **Step 6: Commit**
 
@@ -1219,30 +1257,14 @@ Claude-Session: https://claude.ai/code/session_015E8GyX6BnRNX4AeyGNe5et" && cd .
 ### Task 8: Workspace wiring — keymap, fork branch push, manifest, full build, hardware checklist
 
 **Files:**
-- Modify: `config/halcyon_ferris.keymap:13-22,217`
 - Modify: `config/west.yml:31`
 - Create: `docs/spec/split-dual-role/hardware-checklist.md`
 
-- [ ] **Step 1: Keymap switch on the DTS flag**
+- [ ] **Step 1: Keymap**
 
-In `config/halcyon_ferris.keymap`, after `#include <dt-bindings/zmk/bt.h>` add:
-
-```c
-#include <dt-bindings/zmk/split_mode.h>
-
-/* Dual-role builds (HALCYON_DUAL_ROLE via -DDTS_EXTRA_CPPFLAGS) switch dongle/standalone mode with
- * the BT keys; every other build keeps plain profile selection. */
-#ifdef HALCYON_DUAL_ROLE
-#define BT_KEY_0 &split_mode SM_DONGLE
-#define BT_KEY_1 &split_mode SM_HOST 1
-#define BT_KEY_2 &split_mode SM_HOST 2
-#else
-#define BT_KEY_0 &bt BT_SEL 0
-#define BT_KEY_1 &bt BT_SEL 1
-#define BT_KEY_2 &bt BT_SEL 2
-#endif
-```
-On the numpad layer replace `&bt BT_SEL 0       &bt BT_SEL 1      &bt BT_SEL 2` with `BT_KEY_0           BT_KEY_1          BT_KEY_2` (keep the column alignment). The `split_mode.h` include is unconditional; it exists on the fork branch for every build.
+Already done in Task 5 (`BT_KEY_0..2` macros under `#ifdef HALCYON_DUAL_ROLE`). Verify with
+`git log --oneline -- config/halcyon_ferris.keymap | head -1`. Do not touch the keymap: it carries
+an uncommitted user edit that must stay uncommitted.
 
 - [ ] **Step 2: Push the fork branch and point the manifest at it**
 
@@ -1303,8 +1325,8 @@ profile 1, key 3 = standalone on profile 2, key 4 = clear active profile.
 - [ ] **Step 6: Commit the workspace**
 
 ```bash
-git add config/halcyon_ferris.keymap config/west.yml docs/spec/split-dual-role/hardware-checklist.md
-git commit -q -m "feat(halcyon): runtime dongle/standalone switch on the BT keys for dual builds
+git add config/west.yml docs/spec/split-dual-role/hardware-checklist.md
+git commit -q -m "feat(halcyon): point the manifest at the dual-role fork branch, add hardware checklist
 
 Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
 Claude-Session: https://claude.ai/code/session_015E8GyX6BnRNX4AeyGNe5et"
