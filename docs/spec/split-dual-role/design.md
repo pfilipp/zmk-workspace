@@ -152,8 +152,18 @@ decision; a mode change always reboots the left half.
     the fork.
 - Peripheral-mode advertising on the left half: direct-advertise to
   `split/dongle_addr` when set; otherwise open advertising with the split
-  service UUID, as today. When a bond completes in peripheral mode, store the
-  peer as `split/dongle_addr`.
+  service UUID, as today. The dongle is learned from the first GATT write to
+  the split service by a connected central that is not a bonded host (only a
+  ZMK split central writes the selected physical layout or a behavior), and
+  stored as `split/dongle_addr`. (Amended after the final review: learning
+  from "first encrypted peer" would trust any pairing central.)
+- Switch-pending guard: from the moment the switch work starts dropping links
+  until the reboot, `zmk_split_role_switch_pending()` is true and no split
+  transport or host advertising may restart. Without it the left re-advertises
+  to the dongle within milliseconds of dropping the link, the dongle reconnects
+  and flips back to dongle mode before the reboot. The dongle also ignores a
+  reconnect from the standalone slot while its own delayed disconnect is
+  pending.
 - Host guard in peripheral mode: the HID GATT service is static and therefore
   present. In the `connected` callback, if the peer matches any stored host
   profile peer, disconnect immediately. This is what stops a Mac from latching
@@ -195,11 +205,15 @@ decision; a mode change always reboots the left half.
 ### Component: right half multi-bond advertising (fork, Kconfig `ZMK_SPLIT_PERIPHERAL_MULTI_BOND`, default n)
 
 - `BT_MAX_PAIRED` default becomes 2 under this option.
-- `start_advertising`: if at least one bond exists, populate the filter accept
-  list with every bond on `BT_ID_DEFAULT` and start connectable undirected
-  advertising with `BT_LE_ADV_OPT_FILTER_CONN | BT_LE_ADV_OPT_FILTER_SCAN_REQ`
-  and no HID data (split UUID only, as today's unbonded case). If no bond
-  exists, open advertising as today.
+- `start_advertising`: while the bond table is not full (fewer than
+  `BT_MAX_PAIRED` bonds) advertise openly with the split UUID, as today's
+  unbonded case, so the second central can pair; the dongle's mode gate and
+  the dynamic half's role gating keep the wrong central away meanwhile. Once
+  the table is full, populate the filter accept list with every bond on
+  `BT_ID_DEFAULT` and advertise connectable undirected with
+  `BT_LE_ADV_OPT_FILTER_CONN | BT_LE_ADV_OPT_FILTER_SCAN_REQ`.
+  (Amended after the final review: with the accept list active from the
+  first bond, the left half could never pair.)
 - Advertising interval: fast for the first 30 s after a disconnect, then the
   slow interval. The peripheral only advertises while disconnected, so idle
   power is comparable to today's low-duty directed advertising.
