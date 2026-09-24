@@ -212,11 +212,12 @@ decision; a mode change always reboots the left half.
 - `build.yaml`: existing four Halcyon targets unchanged. Three new targets:
   - `halcyon_ferris_left_dual`: `halcyon_wireless//zmk`, shields
     `halcyon_ferris_left mod_battery_lipo mod_display_epaper_forest mod_cirque_central`,
-    cmake-args `-DCONFIG_ZMK_SPLIT_ROLE_DYNAMIC=y -DCONFIG_ZMK_HID_LAYER_STATE_REPORT=y -DKEYMAP_FILE=<config>/halcyon_ferris_dual.keymap`
+    cmake-args `-DCONFIG_ZMK_SPLIT_ROLE_DYNAMIC=y -DCONFIG_ZMK_HID_LAYER_STATE_REPORT=y -DKEYMAP_FILE=$(config)/halcyon_ferris_dual.keymap`
   - `halcyon_ferris_right_dual`: as `halcyon_ferris_right`, plus
     `-DCONFIG_ZMK_SPLIT_PERIPHERAL_MULTI_BOND=y`
   - `halcyon_ferris_dongle_dual`: as `halcyon_ferris_dongle`, plus
-    `-DCONFIG_ZMK_SPLIT_CENTRAL_MODE_GATE=y -DKEYMAP_FILE=<config>/halcyon_ferris_dual.keymap`
+    `-DCONFIG_ZMK_SPLIT_CENTRAL_MODE_GATE=y -DKEYMAP_FILE=$(config)/halcyon_ferris_dual.keymap`
+- `KEYMAP_FILE` must be an absolute path. The Justfile already computes the absolute config dir; the GitHub workflow needs the equivalent (implementation detail for the plan).
 - `config/halcyon_ferris_dual.keymap`: `#define HALCYON_DUAL_ROLE 1` then
   `#include "halcyon_ferris.keymap"`.
 - `config/halcyon_ferris.keymap`: the three BT keys are chosen with
