@@ -36,3 +36,17 @@ include:
     shield: halcyon_ferris_left mod_battery_lipo mod_display_epaper_forest mod_cirque_central
     cmake-args: -DCONFIG_ZMK_HID_LAYER_STATE_REPORT=y
     artifact-name: halcyon_ferris_left_standalone
+  # Dual-role variant: one left firmware that switches between dongle mode and
+  # standalone mode at runtime via &split_mode. See docs/spec/split-dual-role/.
+  - board: halcyon_wireless//zmk
+    shield: halcyon_ferris_left mod_battery_lipo mod_display_epaper_forest mod_cirque_central
+    cmake-args: -DCONFIG_ZMK_SPLIT_ROLE_DYNAMIC=y -DCONFIG_ZMK_HID_LAYER_STATE_REPORT=y -DCONFIG_BT_MAX_PAIRED=7 -DDTS_EXTRA_CPPFLAGS=-DHALCYON_DUAL_ROLE=1
+    artifact-name: halcyon_ferris_left_dual
+  - board: halcyon_wireless//zmk
+    shield: halcyon_ferris_right mod_battery_lipo mod_cirque_hw_right
+    cmake-args: -DCONFIG_ZMK_SPLIT_PERIPHERAL_MULTI_BOND=y -DDTS_EXTRA_CPPFLAGS=-DHALCYON_DUAL_ROLE=1
+    artifact-name: halcyon_ferris_right_dual
+  - board: halcyon_dongle//zmk
+    shield: halcyon_ferris_dongle mod_cirque_central
+    cmake-args: -DCONFIG_ZMK_SPLIT_CENTRAL_MODE_GATE=y -DDTS_EXTRA_CPPFLAGS=-DHALCYON_DUAL_ROLE=1
+    artifact-name: halcyon_ferris_dongle_dual
