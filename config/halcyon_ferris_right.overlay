@@ -1,0 +1,11 @@
+/*
+ * Halcyon Ferris right half: Cirque touchpad hardware tweaks.
+ *
+ * The mod_cirque_hw_right shield enables tap-to-click (`primary-tap-enable`).
+ * Taps are too imprecise, so drop it: clicks come from keys on the LOWER
+ * layer instead (see halcyon_ferris.keymap).
+ */
+
+&trackpad {
+    /delete-property/ primary-tap-enable;
+};
