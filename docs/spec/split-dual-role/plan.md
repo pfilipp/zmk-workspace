@@ -98,7 +98,7 @@ In `zmk/app/src/split/Kconfig`, directly after the `config ZMK_SPLIT_ROLE_CENTRA
 ```kconfig
 config ZMK_SPLIT_ROLE_DYNAMIC
     bool "Select the split role at boot from settings"
-    depends on ZMK_SPLIT_BLE && SETTINGS
+    depends on ZMK_SPLIT_BLE
     select ZMK_SPLIT_ROLE_CENTRAL
     help
       Link both the split central and the split peripheral into one image and
@@ -108,7 +108,7 @@ config ZMK_SPLIT_ROLE_DYNAMIC
 
 config ZMK_SPLIT_CENTRAL_MODE_GATE
     bool "Dongle-side gate for a dynamic-role peripheral"
-    depends on ZMK_SPLIT_ROLE_CENTRAL && !ZMK_SPLIT_ROLE_DYNAMIC && SETTINGS
+    depends on ZMK_SPLIT_ROLE_CENTRAL && !ZMK_SPLIT_ROLE_DYNAMIC
     help
       Remember whether a dynamic-role peripheral switched to standalone mode
       and, while it has, only accept connections from that peripheral so the
@@ -198,6 +198,9 @@ static inline bool zmk_split_role_is_central(void) {
 #include <zmk/split/role.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+
+/* `depends on SETTINGS` in Kconfig would close a dependency loop through ZMK_USB, so assert here. */
+BUILD_ASSERT(IS_ENABLED(CONFIG_SETTINGS), "ZMK_SPLIT_ROLE_DYNAMIC requires CONFIG_SETTINGS");
 
 static uint8_t current_mode = ZMK_SPLIT_MODE_DONGLE;
 static bt_addr_le_t dongle_addr;
@@ -1003,6 +1006,9 @@ void zmk_split_central_mode_gate_peripheral_connected(int slot);
 #include <zmk/split/central_mode_gate.h>
 
 LOG_MODULE_DECLARE(zmk, CONFIG_ZMK_LOG_LEVEL);
+
+/* `depends on SETTINGS` in Kconfig would close a dependency loop through ZMK_USB, so assert here. */
+BUILD_ASSERT(IS_ENABLED(CONFIG_SETTINGS), "ZMK_SPLIT_CENTRAL_MODE_GATE requires CONFIG_SETTINGS");
 
 #define LEFT_SLOT_UNKNOWN 0xFF
 
