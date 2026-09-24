@@ -334,6 +334,7 @@ Claude-Session: https://claude.ai/code/session_015E8GyX6BnRNX4AeyGNe5et"
 **Files:**
 - Modify: `zmk/app/src/split/CMakeLists.txt`
 - Modify: `zmk/app/src/split/bluetooth/CMakeLists.txt`
+- Modify: `zmk/app/src/split/bluetooth/Kconfig:79-103`
 - Modify: `zmk/app/src/split/peripheral.c:30,81-121,141-146`
 - Modify: `zmk/app/src/split/bluetooth/peripheral.c:236-266`
 - Modify: `zmk/app/src/split/bluetooth/central.c:1274-1282`
@@ -370,6 +371,10 @@ if (CONFIG_ZMK_SPLIT_ROLE_CENTRAL)
   target_sources(app PRIVATE central.c)
 endif()
 ```
+
+- [ ] **Step 1b: Kconfig — peripheral transport symbols in a dynamic build (ruling)**
+
+`zmk/app/src/split/bluetooth/Kconfig` gates `ZMK_SPLIT_BLE_PERIPHERAL_STACK_SIZE`, `ZMK_SPLIT_BLE_PERIPHERAL_PRIORITY` and `ZMK_SPLIT_BLE_PERIPHERAL_POSITION_QUEUE_SIZE` under `if !ZMK_SPLIT_ROLE_CENTRAL`, which a dynamic build never satisfies. Split that block: those three symbols go under `if !ZMK_SPLIT_ROLE_CENTRAL || ZMK_SPLIT_ROLE_DYNAMIC` (with a comment `# Also needed by a dynamic-role build, which links the peripheral transport alongside the central.`); `BT_MAX_PAIRED`, `BT_MAX_CONN` and `BT_GAP_AUTO_UPDATE_CONN_PARAMS` stay under `if !ZMK_SPLIT_ROLE_CENTRAL`.
 
 - [ ] **Step 2: Build to see the expected link failure**
 
