@@ -21,7 +21,7 @@
   Co-Authored-By: Claude Fable 5.1 <noreply@anthropic.com>
   Claude-Session: https://claude.ai/code/session_015E8GyX6BnRNX4AeyGNe5et
   ```
-- Behavior node names invoked on peripherals must fit `behavior_dev[16]` (15 chars + NUL).
+- Behavior node names invoked on peripherals must fit the BLE run-behavior payload `ZMK_SPLIT_RUN_BEHAVIOR_DEV_LEN` (9 bytes: 8 chars + NUL). The node is `splmode` (7 chars); a `BUILD_ASSERT` in the behavior enforces it.
 - Unit tests: ZMK's native_sim test harness cannot run on this macOS host (Zephyr native_sim is Linux-only and the nix shell ships only the ARM toolchain). Verification for every task is: the affected targets build cleanly (`just build <target> -p`), and the final on-hardware checklist. This is a deviation from the spec's "Testing" section and must be stated in the final report.
 
 ## Review Focus
@@ -731,8 +731,8 @@ include: two_param.yaml
     behaviors {
         // Only instantiated when a keymap references it, so non-dual builds are untouched.
         /omit-if-no-ref/
-        // Invoked on peripherals over the split link: node name must be <= 15 characters.
-        split_mode: splitmode {
+        // Invoked on peripherals over the split link: node name must be <= 8 characters.
+        split_mode: splmode {
             compatible = "zmk,behavior-split-mode";
             #binding-cells = <2>;
             display-name = "Split Mode";
@@ -938,7 +938,7 @@ just build halcyon_ferris_left_dual 2>&1 | tail -4
 just build halcyon_ferris_right_dual 2>&1 | tail -4
 just build halcyon_ferris_left_standalone 2>&1 | tail -3
 ```
-Expected: all succeed; `grep -c behavior_split_mode .build/halcyon_ferris_right_dual/build.ninja` ≥ 1; `grep -c splitmode .build/halcyon_ferris_left_standalone/zephyr/zephyr.dts` prints 0 (non-dual builds omit the node).
+Expected: all succeed; `grep -c behavior_split_mode .build/halcyon_ferris_right_dual/build.ninja` ≥ 1; `grep -c splmode .build/halcyon_ferris_left_standalone/zephyr/zephyr.dts` prints 0 (non-dual builds omit the node).
 
 - [ ] **Step 6: Commit**
 
@@ -1305,9 +1305,9 @@ Expected: nine artifacts (`splitkb_aurora_sweep_left/right`, `halcyon_ferris_don
 for t in halcyon_ferris_left halcyon_ferris_right halcyon_ferris_dongle halcyon_ferris_left_standalone; do
   echo "== $t"; grep -E "^CONFIG_ZMK_SPLIT_ROLE_DYNAMIC|^CONFIG_ZMK_SPLIT_CENTRAL_MODE_GATE|^CONFIG_ZMK_SPLIT_PERIPHERAL_MULTI_BOND|^CONFIG_BT_MAX_PAIRED=" .build/$t/zephyr/.config
 done
-grep -c "splitmode" .build/halcyon_ferris_left/zephyr/zephyr.dts .build/halcyon_ferris_left_dual/zephyr/zephyr.dts
+grep -c "splmode" .build/halcyon_ferris_left/zephyr/zephyr.dts .build/halcyon_ferris_left_dual/zephyr/zephyr.dts
 ```
-Expected: none of the three new options appear in the old targets' `.config` (Kconfig omits `n` symbols that are not visible); `BT_MAX_PAIRED` is 1 for the old right, 6 for the old left/dongle. The `splitmode` node count is 0 for the old left and ≥ 1 for the dual left.
+Expected: none of the three new options appear in the old targets' `.config` (Kconfig omits `n` symbols that are not visible); `BT_MAX_PAIRED` is 1 for the old right, 6 for the old left/dongle. The `splmode` node count is 0 for the old left and ≥ 1 for the dual left.
 
 - [ ] **Step 5: Write the hardware checklist**
 
