@@ -181,9 +181,11 @@ decision; a mode change always reboots the left half.
 - Compiled on all three devices (it is referenced from the shared keymap for
   dual targets). Behaviour by device, decided at compile time:
   - `ZMK_SPLIT_ROLE_DYNAMIC` (left half): if the requested mode differs from
-    the persisted one, save mode (and profile for HOST), then submit a work
-    item that disconnects peripherals and calls `sys_reboot`. If same mode
-    and HOST, select the profile. Otherwise no-op.
+    the boot-time one, capture the request and submit a work item that
+    persists the profile (for HOST) and the mode, stops scanning and
+    advertising, disconnects every link and calls `sys_reboot`; any failed
+    write aborts the switch. If same mode and HOST, select the profile.
+    Otherwise no-op.
   - `ZMK_SPLIT_ROLE_CENTRAL` without dynamic (dongle) and
     `ZMK_SPLIT_CENTRAL_MODE_GATE`: on HOST, record `left_slot` from
     `event.source`, save `mode=standalone`, disconnect all peripherals. On
