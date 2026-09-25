@@ -56,10 +56,11 @@ manifest:
       revision: b8dc165b9a5a6358346a1d2598b9015a05d9b517 # main (2026-09-09)
 
     # Halcyon boards (wireless controller, dongle) and shields from splitkb.com
+    # Fork: dual-role display selection on top of splitkb main 0c1adbc (2026-09-17)
     - name: zmk-halcyon-module
-      remote: splitkb
+      url: https://github.com/pfilipp/zmk-halcyon-module
       path: modules/zmk/halcyon
-      revision: 0c1adbc24ade769d88e4e73d20e19f5d024afaaa # main (2026-09-17)
+      revision: dual-role-display
 
     # Only source necessary Zephyr modules. Remove this entire section to restore
     # the default (needed for less common hardware).
