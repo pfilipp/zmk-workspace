@@ -189,8 +189,10 @@ decision; a mode change always reboots the left half.
     `event.source`, save `mode=standalone`, disconnect all peripherals. On
     DONGLE, no-op (the reconnect of the left half flips the mode).
   - Peripheral only (right half): no-op.
-- The reboot runs from a work item after the settings write returns, so the
-  key release still reaches the current host and the write is complete.
+- All persisting (host profile, mode) happens in the switch work item on the system work
+  queue, never in the BLE callback that delivered the command, and a failed write aborts the
+  switch. The running role is fixed at boot and never changes before the reboot. The work item
+  also stops any running scan or advertising before dropping links.
 
 ### Component: dongle gate (fork, Kconfig `ZMK_SPLIT_CENTRAL_MODE_GATE`, default n)
 
